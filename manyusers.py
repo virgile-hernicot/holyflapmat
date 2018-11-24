@@ -18,6 +18,7 @@ k = 5 # number of stations considered per user
 # dict of {userid -> {nummer -> time_to_station}}
 time_to_stations_per_user = {}
 duration_per_user = {}
+available_spots = {}
 distinct_stations = []
 
 for idx, element in enumerate(users_info["users"]):
@@ -33,6 +34,8 @@ for idx, element in enumerate(users_info["users"]):
         nummer = int(element["n"])
         station_localization = (element["lat"], element["lng"])
         fr = element["name"]
+        available_spots[nummer] = element["n_spots"]
+
         dist_time = gmaps.distance_matrix(str(user_latitude) + ',' + str(user_longitude), str(station_localization[0]) + ',' + str(station_localization[1]))[
             'rows'][0]['elements'][0]
         travel_time = get_travel_duration(fr, to)
@@ -49,7 +52,8 @@ for idx, element in enumerate(users_info["users"]):
 distinct_stations = sorted(list(set(distinct_stations)))
 
 # string in which we store the data before writing to the file
-data = str(N) + ' ' + str(len(distinct_stations)) + '\n'
+data = "batch\n"
+data += str(N) + ' ' + str(len(distinct_stations)) + '\n'
 
 for nummers_times in time_to_stations_per_user.values():
     nummers = nummers_times.keys()
@@ -64,6 +68,11 @@ for nummers_duration in duration_per_user.values():
         # if the station is in the prefered stations of the user, store the time, otherwise store -1
         data += str(nummers_duration.get(station_nummer, -1)) + ' '
     data += '\n'
+
+for station_nummer in distinct_stations:
+    data += str(int(available_spots[station_nummer])) + "\n"
+
+data += "exit"
 
 print(data)
 
