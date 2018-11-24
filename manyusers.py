@@ -9,7 +9,7 @@ gmaps = googlemaps.Client(key='AIzaSyDo9ECba-vKX4CVd3P53HuRgPR-GSC-u5I')
 
 costs = open('costs_data', 'w')
 
-with open('../examples/five_users_input_sample.json') as f:
+with open('examples/five_users_input_sample.json') as f:
     users_info = json.load(f)
 
 N = len(users_info["users"])  # number of users
