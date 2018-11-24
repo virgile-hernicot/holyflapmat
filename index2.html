@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+ <title>HolyFlatMap</title>
+ <meta charset="utf-8">
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <div class="container" id="todo-list-example">
+    <div class="section m-6">
+  <form v-on:submit.prevent="addNewUser">
+    <label for="new-todo">Add a todo</label>
+    <input
+      v-model="newUserLong"
+      id="new-todo"
+      placeholder="E.g. 1234"
+    >
+    <input
+      v-model="newUserLat"
+      id="new-todo"
+      placeholder="E.g. 1234"
+    >
+    <input
+      v-model="newUserDest"
+      id="new-todo"
+      placeholder="E.g. Lausanne"
+    >
+    <button class="btn btn-default">Add</button>
+  </form>
+</div>
+  <ul>
+    <li
+      is="todo-item"
+      v-for="(todo, index) in users"
+      v-bind:key="todo.id"
+      v-bind:title="todo.title"
+      v-bind:long="todo.long"
+      v-bind:lat="todo.lat"
+      v-bind:dest="todo.dest"
+      v-on:remove="todos.splice(index, 1)"
+    ></li>
+  </ul>
+  <button v-on:click="compute">Compute</button>
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+  Vue.component('todo-item', {
+    template: '\
+      <li>\
+        <span>longitude: {{ long }},</span>\
+        <span>lattitude: {{ lat }},</span>\
+        <span>destination: {{ dest }}</span>\
+        <button v-on:click="$emit(\'remove\')">Remove</button>\
+      </li>\
+    ',
+    props: ['long', 'lat', 'dest']
+  })
+  var app = new Vue({
+    el: '#todo-list-example',
+    data: {
+      newTodoText: '',
+      newUserLong: '',
+      newUserLat: '',
+      newUserDest: '',
+      todos: [
+        {
+          id: 1,
+          title: 'Do the dishes',
+          long: '123344',
+          lat: '12455',
+          dest: 'geneve'
+        }
+      ],users: [
+            {
+                "lat": "46.490036",
+                "long": "6.353213",
+                "dest": "Genève"
+            },
+            {
+                "lat": "46.453831",
+                "long": "6.293492",
+                "dest": "Lausanne"
+            },
+            {
+                "lat": "46.206415",
+                "long": "6.140399",
+                "dest": "Lausanne"
+            },
+            {
+                "lat": "46.272339",
+                "long": "6.161429",
+                "dest": "Lausanne"
+            },
+            {
+                "lat": "46.272339",
+                "long": "6.161429",
+                "dest": "Genève"
+            }
+        ],
+        nextTodoId: 2
+    },
+    methods: {
+      addNewUser: function () {
+        this.users.push({
+            lat: this.newUserLat,
+          long: this.newUserLong,
+          dest: this.newUserDest
+        });
+        this.newTodoText = '';
+        this.newUserLat = '';
+        this.newUserDest = '';
+        this.newUserLong = '';
+      },
+      compute: function () {
+        var arr = { City: 'Moscow', Age: 25 };
+        var arr = this.users;
+        $.ajax(
+           {
+                url: "/compute",
+                type: "POST",
+                data: JSON.stringify(arr),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                async: true,
+                success: function(msg) {
+                    console.log(msg);
+                }
+            }
+        );
+      }
+    }
+  });
+</script>
+</body>
+</html>

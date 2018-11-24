@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RailPark</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+</head>
+<body>
+
+<section class="container">
+    <h1>Park + Rail</h1>
+    <div class="">
+        <ul id="users">
+
+        </ul>
+    </div>
+    <form>
+        <div class="row">
+            <div class="col">
+                <input id="lat" type="text" class="form-control" placeholder="Latitude">
+            </div>
+            <div class="col">
+                <input id="long" type="text" class="form-control" placeholder="Longitude">
+            </div>
+            <div class="col">
+                <input id="dest" type="text" class="form-control" placeholder="Destination">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mb-2" id="add">Add</button>
+    </form>
+    <button class="btn btn-primary mb-2" id="compute">Compute</button>
+</section>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="client.js"></script>
+</body>
+</html>
