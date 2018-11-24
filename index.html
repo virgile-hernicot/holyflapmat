@@ -63,6 +63,7 @@
             "dest": "Genève"
         }
     ];
+    var results = [];
     $(document).ready(function(){
 
         loadUsers();
@@ -86,7 +87,9 @@
                     dataType: 'json',
                     async: true,
                     success: function(msg) {
-                        alert(msg);
+                        results = msg;
+                        alert(msg.toSource());
+
                     },
                     failure: function(errMsg) {
                         alert(errMsg);
@@ -101,6 +104,10 @@
         $.each(users, function( key, value ) {
             $("#users").append("<li><span>"+key+"</span> lat: "+value.lat+", long: "+value.long+", destination: "+value.dest+"</li>");
         });
+    }
+
+    function buildMap(){
+
     }
 </script>
 </body>

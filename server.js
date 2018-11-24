@@ -43,8 +43,8 @@ app.post('/compute', function(request, response){
                 return res.end("404 Not Found");
             }
             response.setHeader('Content-Type', 'application/json');
-            response.send(JSON.stringify(data));    // echo the result back
-            return res.end();
+            response.send(JSON.parse(data));    // echo the result back
+            return response.end();
         });
     }, 5000);
 
