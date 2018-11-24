@@ -38,7 +38,7 @@
   <ul>
     <li
       is="todo-item"
-      v-for="(todo, index) in todos"
+      v-for="(todo, index) in users"
       v-bind:key="todo.id"
       v-bind:title="todo.title"
       v-bind:long="todo.long"
@@ -77,15 +77,40 @@
           lat: '12455',
           dest: 'geneve'
         }
-      ],
-      nextTodoId: 2
+      ],users: [
+            {
+                "lat": "46.490036",
+                "long": "6.353213",
+                "dest": "Genève"
+            },
+            {
+                "lat": "46.453831",
+                "long": "6.293492",
+                "dest": "Lausanne"
+            },
+            {
+                "lat": "46.206415",
+                "long": "6.140399",
+                "dest": "Lausanne"
+            },
+            {
+                "lat": "46.272339",
+                "long": "6.161429",
+                "dest": "Lausanne"
+            },
+            {
+                "lat": "46.272339",
+                "long": "6.161429",
+                "dest": "Genève"
+            }
+        ],
+        nextTodoId: 2
     },
     methods: {
       addNewUser: function () {
-        this.todos.push({
-          id: this.nextTodoId++,
+        this.users.push({
+            lat: this.newUserLat,
           long: this.newUserLong,
-          lat: this.newUserLat,
           dest: this.newUserDest
         });
         this.newTodoText = '';
@@ -95,7 +120,7 @@
       },
       compute: function () {
         var arr = { City: 'Moscow', Age: 25 };
-        var arr = this.todos;
+        var arr = this.users;
         $.ajax(
            {
                 url: "/compute",

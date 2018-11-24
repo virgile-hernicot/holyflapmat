@@ -1,1 +1,1 @@
-[{"id":1,"title":"Do the dishes","long":"123344","lat":"12455","dest":"geneve"},{"id":2,"long":"12","lat":"12","dest":"Lausanne"}]
+{"users":[{"lat":"46.490036","long":"6.353213","dest":"Genève"},{"lat":"46.453831","long":"6.293492","dest":"Lausanne"},{"lat":"46.206415","long":"6.140399","dest":"Lausanne"},{"lat":"46.272339","long":"6.161429","dest":"Lausanne"},{"lat":"46.272339","long":"6.161429","dest":"Genève"}]}

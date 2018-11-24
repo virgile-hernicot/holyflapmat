@@ -162,6 +162,7 @@ void solve_flow(int *station_capacities){
 	}
 
 	// Iterate over the outedges from the users and find their mapping.
+	std::cout << N << "\n" << M << "\n";
 	for(int i=0; i<N; i++){	
 		Vertex v_user = USER(i);
 		bool matched = false;
@@ -179,6 +180,12 @@ void solve_flow(int *station_capacities){
 		}
 		if(!matched){
 			std::cout << -1 << "\n";
+		}
+	}
+	std::cout << cost2 << "\n";
+	if(station_capacities != NULL){
+		for(int i=0; i<M; i++){
+			std::cout << station_capacities[i] << "\n";
 		}
 	}
 }

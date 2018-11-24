@@ -7,7 +7,7 @@ var app = express();
 
 app.use(express.json());
 
-app.get('/index.html', function (req, res) {
+app.get('/index2.html', function (req, res) {
   var q = url.parse(req.url, true);
   var filename = "." + q.pathname;
   fs.readFile(filename, function(err, data) {
@@ -24,14 +24,15 @@ app.get('/index.html', function (req, res) {
 app.get('/run', function (req,res){
   var json = {long: '123',lat: '123'};
   fs.writeFile('batch.json', JSON.stringify(json), 'utf8', function(err,data){
-    shell.exec('./test.sh');
+    shell.exec('../run.sh');
     return res.end('running');
   });
 });
 
 app.post('/compute', function(request, response){
-    fs.writeFile('batch.json', JSON.stringify(request.body), 'utf8', function(err,data){
-        shell.exec('./test.sh');
+    var json = {"users": request.body};
+    fs.writeFile('../examples/five_users_input_sample.json', JSON.stringify(json), 'utf8', function(err,data){
+        shell.exec('../run.sh');
     });
   console.log(request.body);      // your JSON
    response.send(request.body);    // echo the result back
