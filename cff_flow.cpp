@@ -62,7 +62,7 @@ public:
 #define STATION(idx) (idx+N)
 #define IDX_STATION(idx) (idx-N)
 enum COST_HEURISTIC {SIMPLE, WEIGHTED};
-COST_HEURISTIC HEURISTIC = WEIGHTED;
+COST_HEURISTIC HEURISTIC = SIMPLE;
 
 int compute_cost(int time_to_station, int duration_of_travel, int max_duration){
 	if(time_to_station < 0)

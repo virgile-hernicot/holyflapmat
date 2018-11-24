@@ -18,5 +18,11 @@ cnt += 1
 for idx, l in enumerate(lines[cnt:]):
     res["stations_capacities"][idx] = int(l)
 print(res)
-# r = requests.post("http://localhost:3000/results", data=res)
-# print(r)
+with open("stations_info.json") as f:
+    infos = json.load(f)
+
+print(infos)
+res.update(infos)
+
+with open("./final_infos.json", "w") as f:
+    json.dump(res, f)
