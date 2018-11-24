@@ -18,5 +18,5 @@ cnt += 1
 for idx, l in enumerate(lines[cnt:]):
     res["stations_capacities"][idx] = int(l)
 print(res)
-r = requests.post("localhost:3000/results", data=res)
-print(r)
+# r = requests.post("http://localhost:3000/results", data=res)
+# print(r)
