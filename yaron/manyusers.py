@@ -13,27 +13,37 @@ with open('users_info.json') as f:
 N = len(users_info)  # number of users
 k = 5 # number of stations considered per user
 
-for key, value in users_info.items():
-    (user_latitude, user_longitude) = key #46.456566, 6.209502
+# dict of {userid -> {nummer -> time_to_station}}
+time_to_stations_per_user = {}
+distinct_stations = []
+
+for idx, user_localization, dest in enumerate(users_info.items()):
+    (user_latitude, user_longitude) = user_localization #46.456566, 6.209502
 
     closest = get_k_closest_stations(user_latitude, user_longitude, 5)
 
-    time_to_stations = []
+    time_to_stations = {}
 
-    for key, value in closest.items():
-        dist_time = gmaps.distance_matrix(str(user_latitude) + ',' + str(user_longitude), str(value[0]) + ',' + str(value[1]))[
+    for nummer, station_localization in closest.items():
+        dist_time = gmaps.distance_matrix(str(user_latitude) + ',' + str(user_longitude), str(station_localization[0]) + ',' + str(station_localization[1]))[
             'rows'][0]['elements'][0]
         time = 1000  # dist_time['duration']['value']
-        time_to_stations.append((key, time))
+        time_to_stations[nummer] = time
 
-    time_to_stations.sort(key=lambda x: x[0])
+    distinct_stations += time_to_stations.keys()
+    time_to_stations_per_user[idx] = time_to_stations
+
+# remove duplicates and sort
+distinct_stations = sorted(list(set(distinct_stations)))
 
 # string in which we store the data before writing to the file
-data = str(N) + ' ' + str(len(time_to_stations)) + '\n'
+data = str(N) + ' ' + str(len(distinct_stations)) + '\n'
 
-for n in range(N):
-    for m in range(len(time_to_stations)):
-        data += str(time_to_stations[m][1]) + ' '
+for nummers_times in time_to_stations_per_user:
+    nummers = nummers_times.keys()
+    for station_nummer in distinct_stations:
+        # if the station is in the prefered stations of the user, store the time, otherwise store -1
+        data += str(nummers_times.get(station_nummer, -1)) + ' '
     data += '\n'
 print(data)
 
