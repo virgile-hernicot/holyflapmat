@@ -31,8 +31,8 @@ app.get('/run', function (req,res){
 
 app.post('/compute', function(request, response){
     var json = {"users": request.body};
-    fs.writeFile('../examples/five_users_input_sample.json', JSON.stringify(json), 'utf8', function(err,data){
-        shell.exec('../run.sh');
+    fs.writeFile('./examples/five_users_input_sample.json', JSON.stringify(json), 'utf8', function(err,data){
+        shell.exec('./run.sh');
     });
   console.log(request.body);      // your JSON
    response.send(request.body);    // echo the result back
