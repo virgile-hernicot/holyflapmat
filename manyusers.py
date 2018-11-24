@@ -74,7 +74,6 @@ for nummers_times in time_to_stations_per_user.values():
     for station_nummer in distinct_stations:
         # if the station is in the prefered stations of the user, store the time, otherwise store -1
         data += str(50*nummers_times.get(station_nummer, -1)) + ' ' # coefficient, because car worse than train
-        print(names[station_nummer])
     data += '\n'
 
 for nummers_duration in duration_per_user.values():
@@ -84,9 +83,10 @@ for nummers_duration in duration_per_user.values():
         data += str(nummers_duration.get(station_nummer, -1)) + ' '
     data += '\n'
 
-for station_nummer in distinct_stations:
+for idx, station_nummer in enumerate(distinct_stations):
     data += str(int(available_spots[station_nummer])) + "\n"
     ordered_station_infos[station_nummer] = station_infos[station_nummer]
+    station_infos[station_nummer]["id"] = idx
 
 data += "exit"
 
