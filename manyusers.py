@@ -85,8 +85,8 @@ for nummers_duration in duration_per_user.values():
 
 for idx, station_nummer in enumerate(distinct_stations):
     data += str(int(available_spots[station_nummer])) + "\n"
-    ordered_station_infos[station_nummer] = station_infos[station_nummer]
-    station_infos[station_nummer]["id"] = idx
+    ordered_station_infos[idx] = station_infos[station_nummer]
+    ordered_station_infos[idx]["nummer"] = station_nummer
 
 data += "exit"
 
