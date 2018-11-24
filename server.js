@@ -30,6 +30,7 @@ app.get('/run', function (req,res){
 });
 
 app.post('/compute', function(request, response){
+    console.log(request.body);
     var json = {"users": request.body};
     fs.writeFile('./examples/five_users_input_sample.json', JSON.stringify(json), 'utf8', function(err,data){
         shell.exec('./run.sh');

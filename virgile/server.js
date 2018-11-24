@@ -7,7 +7,7 @@ var app = express();
 
 app.use(express.json());
 
-app.get('/index.html', function (req, res) {
+app.get('/index2.html', function (req, res) {
   var q = url.parse(req.url, true);
   var filename = "." + q.pathname;
   fs.readFile(filename, function(err, data) {
