@@ -3,6 +3,12 @@ import requests
 import json
 from stations import *
 from get_travel_duration import *
+import collections
+
+def removekey(d, key):
+    r = dict(d)
+    del r[key]
+    return r
 
 # Requires API key
 gmaps = googlemaps.Client(key='AIzaSyDo9ECba-vKX4CVd3P53HuRgPR-GSC-u5I')
@@ -19,6 +25,10 @@ k = 5 # number of stations considered per user
 time_to_stations_per_user = {}
 duration_per_user = {}
 available_spots = {}
+names = {}
+# dictionary storing all the possible station information to a file
+station_infos = {}
+ordered_station_infos = collections.OrderedDict()
 distinct_stations = []
 
 for idx, element in enumerate(users_info["users"]):
@@ -26,7 +36,6 @@ for idx, element in enumerate(users_info["users"]):
     to = element["dest"]
 
     closest = get_k_closest_stations(float(user_latitude), float(user_longitude) , k)
-
     time_to_stations = {}
     duration_from_stations = {}
 
@@ -40,9 +49,14 @@ for idx, element in enumerate(users_info["users"]):
             'rows'][0]['elements'][0]
         travel_time = get_travel_duration(fr, to)
         time = dist_time['duration']['value']
+        names[nummer] = element["name"]
 
         time_to_stations[nummer] = time
         duration_from_stations[nummer] = travel_time
+
+        if nummer not in station_infos:
+            station_infos[nummer] = removekey(element, "n")
+
 
     distinct_stations += time_to_stations.keys()
     time_to_stations_per_user[idx] = time_to_stations
@@ -59,7 +73,8 @@ for nummers_times in time_to_stations_per_user.values():
     nummers = nummers_times.keys()
     for station_nummer in distinct_stations:
         # if the station is in the prefered stations of the user, store the time, otherwise store -1
-        data += str(nummers_times.get(station_nummer, -1)) + ' '
+        data += str(50*nummers_times.get(station_nummer, -1)) + ' ' # coefficient, because car worse than train
+        print(names[station_nummer])
     data += '\n'
 
 for nummers_duration in duration_per_user.values():
@@ -71,6 +86,7 @@ for nummers_duration in duration_per_user.values():
 
 for station_nummer in distinct_stations:
     data += str(int(available_spots[station_nummer])) + "\n"
+    ordered_station_infos[station_nummer] = station_infos[station_nummer]
 
 data += "exit"
 
@@ -78,6 +94,9 @@ print(data)
 
 costs.write(data)
 costs.close()
+
+with open('stations_info.json', 'w') as outfile:
+    json.dump(ordered_station_infos, outfile)
 
 # Printing the result
 # print(my_dist)
