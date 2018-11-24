@@ -82,7 +82,7 @@ int compute_cost(int time_to_station, int duration_of_travel, int max_duration){
 	
 }
 
-void solve_flow(){
+void solve_flow(int *station_capacities){
 	int N, M; std::cin >> N >> M;
 	assert(N>0 && M>0);
     // Create Graph and Maps
@@ -138,7 +138,12 @@ void solve_flow(){
 	// They have zero cost (for now) and capacity equal 
 	// to the number of remaining spots in the station	
 	for(int i=0; i<M; i++){
-		int capacity; std::cin >> capacity;
+		int capacity;
+		if(station_capacities == NULL)
+			 std::cin >> capacity;
+		else
+			capacity = station_capacities[i];
+
 		if(capacity > 0)
 			eaG.addEdge(STATION(i), sink, capacity, 0);
 	}
@@ -159,17 +164,44 @@ void solve_flow(){
 	// Iterate over the outedges from the users and find their mapping.
 	for(int i=0; i<N; i++){	
 		Vertex v_user = USER(i);
+		bool matched = false;
 		for(boost::tie(e, eend) = boost::out_edges(boost::vertex(v_user,G), G); e != eend; ++e) {
 			int f = capacitymap[*e] - rescapacitymap[*e];
 			// if it is a match, output the matching
 			if(f > 0){
-				std::cout << IDX_STATION(boost::target(*e, G)) << "\n";	
+				int idx = IDX_STATION(boost::target(*e, G)); 
+				std::cout << idx << "\n";	
+				matched = true;
+				// If station_capacities is defined, reduce the capacity of the station
+				if(station_capacities != NULL)
+					station_capacities[idx]--;
 			}
+		}
+		if(!matched){
+			std::cout << -1 << "\n";
 		}
 	}
 }
 
 int main() {
-	solve_flow();
+	std::string command; std::cin >> command;
+	int* station_capacities = NULL;
+	while(command != "exit"){
+		if(command == "batch"){
+			solve_flow(station_capacities);
+		}else if(command == "load_initial_capacities"){
+			int M;
+			std::cin >> M;
+			station_capacities = new int[M];
+			for(int i=0; i<M; i++){
+				int c; std::cin >> c;
+				station_capacities[i] = c;
+			}
+		}else{
+			std::cerr << "command not recognized. Exiting...\n";
+			break;
+		}
+		std::cin >> command;
+	}
     return 0;
 }
