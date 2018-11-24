@@ -19,9 +19,14 @@ def make_request(k , latitude, longitude, maxDistance):
 	filtered = []	
 	for i in range(len(data)):
 		d = data[i]['fields']
+	
+		if not "parkrail_anzahl" in d:
+			d["parkrail_anzahl"] = 0
+
 		filtered.append(
 			{"n": d["didok"],
 			"name": d["stationsbezeichnung"],
+			"n_spots":d["parkrail_anzahl"],
 			"lat":d["geopos"][0],
 			"lng":d["geopos"][1]}
 		)
@@ -62,6 +67,4 @@ def get_k_closest_stations(latitude, longitude, k):
 
 	
 	return data
-
-print(get_k_closest_stations(46.5159712,6.5648705,10))
 
