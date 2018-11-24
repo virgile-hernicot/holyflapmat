@@ -61,6 +61,26 @@ public:
 #define USER(idx) (idx)
 #define STATION(idx) (idx+N)
 #define IDX_STATION(idx) (idx-N)
+enum COST_HEURISTIC {SIMPLE, WEIGHTED};
+COST_HEURISTIC HEURISTIC = WEIGHTED;
+
+int compute_cost(int time_to_station, int duration_of_travel, int max_duration){
+	if(time_to_station < 0)
+		return -1;
+
+	if(HEURISTIC == SIMPLE){
+		return time_to_station + duration_of_travel;
+	}else if(HEURISTIC == WEIGHTED){
+		const int alpha = 2;
+		double ratio = (double) time_to_station / duration_of_travel;
+		return ((int) std::ceil(std::pow(ratio, alpha))) + duration_of_travel;
+	}else{
+		throw("COST_HEURISTIC not recognized\n");
+		return -1;
+	}
+
+	
+}
 
 void solve_flow(){
 	int N, M; std::cin >> N >> M;
@@ -85,9 +105,30 @@ void solve_flow(){
     // Add the edges btw users and stations
 	// All of capacity one and read the cost from matrix.
 	// Negative cost = unspecified route -> no edge
+	std::vector<std::vector<int>> time_to_stations(N, std::vector<int>(M, -1));
+	std::vector<std::vector<int>> duration_of_travel(N, std::vector<int>(M, -1));
+
+	int max_duration = std::numeric_limits<int>::min();
+
 	for(int i=0; i<N; i++){
 		for(int j=0; j<M; j++){
-			int cost_i_j; std::cin >> cost_i_j;
+			int time;
+			std::cin >> time;
+			time_to_stations[i][j] = time;
+			if(time > max_duration)
+				max_duration = time;
+		}
+	}
+
+	for(int i=0; i<N; i++){
+		for(int j=0; j<M; j++){
+			std::cin >> duration_of_travel[i][j];
+		}
+	}
+
+	for(int i=0; i<N; i++){
+		for(int j=0; j<M; j++){
+			int cost_i_j = compute_cost(time_to_stations[i][j], duration_of_travel[i][j], max_duration);
 			if(cost_i_j >= 0)
 				eaG.addEdge(USER(i), STATION(j), 1, cost_i_j);		
 		}
