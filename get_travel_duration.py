@@ -1,5 +1,6 @@
 import json
 import requests
+import numpy as np
 
 def duration_to_second(s):
     d = int(s[0:2])
@@ -13,7 +14,9 @@ def get_travel_duration(fr, to):
     req = requests.get(base_url, params=payload)
     ans = req.json()
     times = [duration_to_second(c["duration"])for c in ans["connections"]]
-    return min(times)
+    changes = [len(c["sections"])for c in ans["connections"]]
+    min_time =  min(times)
+    return {"duration" : min_time, "changes" : min(changes)}
 
 if __name__ == "__main__":
     d = get_travel_duration("Neuchatel", "Lausanne")
