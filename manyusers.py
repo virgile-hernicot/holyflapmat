@@ -4,11 +4,14 @@ import json
 from stations import *
 from get_travel_duration import *
 import collections
+from pathlib import Path
+
 
 def removekey(d, key):
     r = dict(d)
     del r[key]
     return r
+
 
 # Requires API key
 gmaps = googlemaps.Client(key='AIzaSyDo9ECba-vKX4CVd3P53HuRgPR-GSC-u5I')
@@ -19,7 +22,7 @@ with open('examples/five_users_input_sample.json') as f:
     users_info = json.load(f)
 
 N = len(users_info["users"])  # number of users
-k = 5 # number of stations considered per user
+k = 5  # number of stations considered per user
 
 # dict of {userid -> {nummer -> time_to_station}}
 time_to_stations_per_user = {}
@@ -31,11 +34,21 @@ station_infos = {}
 ordered_station_infos = collections.OrderedDict()
 distinct_stations = []
 
+my_file = Path("./final_infos.json")
+prev_infos = None
+if my_file.is_file():
+    with open(my_file) as f:
+        prev_infos = json.load(f)
+# list of tuples (nummer, n_spots)
+spots_persisted = {}
+for i in range(prev_infos['number_stations']):
+    spots_persisted[prev_infos[str(i)]['nummer']] = prev_infos[str(i)]['n_spots']
+
 for idx, element in enumerate(users_info["users"]):
-    (user_latitude, user_longitude) = (element["lat"], element["long"]) #46.456566, 6.209502
+    (user_latitude, user_longitude) = (element["lat"], element["long"])  # 46.456566, 6.209502
     to = element["dest"]
 
-    closest = get_k_closest_stations(float(user_latitude), float(user_longitude) , k)
+    closest = get_k_closest_stations(float(user_latitude), float(user_longitude), k)
     time_to_stations = {}
     duration_from_stations = {}
 
@@ -43,9 +56,15 @@ for idx, element in enumerate(users_info["users"]):
         nummer = int(element["n"])
         station_localization = (element["lat"], element["lng"])
         fr = element["name"]
-        available_spots[nummer] = element["n_spots"]
 
-        dist_time = gmaps.distance_matrix(str(user_latitude) + ',' + str(user_longitude), str(station_localization[0]) + ',' + str(station_localization[1]))[
+        # if the number of spots for this station is already known, don't load it again
+        if nummer in spots_persisted:
+            available_spots[nummer] = spots_persisted[nummer]
+        else:
+            available_spots[nummer] = element["n_spots"]
+
+        dist_time = gmaps.distance_matrix(str(user_latitude) + ',' + str(user_longitude),
+                                          str(station_localization[0]) + ',' + str(station_localization[1]))[
             'rows'][0]['elements'][0]
         travel_time = get_travel_duration(fr, to)
         time = dist_time['duration']['value']
@@ -56,7 +75,6 @@ for idx, element in enumerate(users_info["users"]):
 
         if nummer not in station_infos:
             station_infos[nummer] = removekey(element, "n")
-
 
     distinct_stations += time_to_stations.keys()
     time_to_stations_per_user[idx] = time_to_stations
@@ -73,7 +91,7 @@ for nummers_times in time_to_stations_per_user.values():
     nummers = nummers_times.keys()
     for station_nummer in distinct_stations:
         # if the station is in the prefered stations of the user, store the time, otherwise store -1
-        data += str(50*nummers_times.get(station_nummer, -1)) + ' ' # coefficient, because car worse than train
+        data += str(50 * nummers_times.get(station_nummer, -1)) + ' '  # coefficient, because car worse than train
     data += '\n'
 
 for nummers_duration in duration_per_user.values():
