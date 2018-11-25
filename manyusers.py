@@ -37,14 +37,14 @@ ordered_station_infos = collections.OrderedDict()
 distinct_stations = []
 
 my_file = Path("./final_infos.json")
-prev_infos = None
+prev_infos ={}
+spots_persisted = {}
 if my_file.is_file():
     with open(my_file) as f:
         prev_infos = json.load(f)
-# list of tuples (nummer, n_spots)
-spots_persisted = {}
-for i in range(prev_infos['number_stations']):
-    spots_persisted[prev_infos[str(i)]['nummer']] = prev_infos[str(i)]['n_spots']
+    # list of tuples (nummer, n_spots)
+    for i in range(prev_infos['number_stations']):
+        spots_persisted[prev_infos[str(i)]['nummer']] = prev_infos[str(i)]['n_spots']
 
 for idx, element in enumerate(users_info["users"]):
     (user_latitude, user_longitude) = (element["lat"], element["long"])  # 46.456566, 6.209502
