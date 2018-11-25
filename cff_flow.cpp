@@ -65,19 +65,26 @@ enum COST_HEURISTIC {SIMPLE, RATIO, ADVANCED};
 COST_HEURISTIC HEURISTIC = ADVANCED;
 
 int compute_cost(int time_to_station, int duration_of_travel, int nb_changes, int price, double user_pref, int max_duration){
+	
+	int MAX_PRICE = 30;
+	int MAX_CHANGES = 4;
+
 	if(time_to_station < 0)
 		return -1;
 
 	if(HEURISTIC == SIMPLE){
-		return time_to_station + duration_of_travel;
+		return (time_to_station + duration_of_travel)/max_duration;
 	}else if(HEURISTIC == RATIO){
 		const int alpha = 2;
 		double ratio = (double) time_to_station / (time_to_station + duration_of_travel);
 		return ((int) std::ceil(std::pow(ratio, alpha)));
 	}else if(HEURISTIC == ADVANCED){
 		double ratio = (double) time_to_station / (time_to_station + duration_of_travel);
-		double h = std::ceil(ratio * nb_changes * user_pref)
-		return (int)h;
+		double n_price = (double) price / MAX_PRICE * user_pref;
+		double n_changes = (double) nb_changes / MAX_CHANGES * (1 - user_pref);
+		double n_total_time = (double) (time_to_station + duration_of_travel)/max_duration;
+		int h = (int) std::ceil(ratio * n_changes * n_price * n_total_time );
+		return h;
 	}else{
 		throw("COST_HEURISTIC not recognized\n");
 		return -1;
