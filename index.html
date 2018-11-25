@@ -5,7 +5,13 @@
     <title>RailPark</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-
+    <style>
+        #map {
+            height: 800px;
+            width: 1200px;
+            margin: 50px auto;
+        }
+    </style>
 </head>
 <body>
 
@@ -31,10 +37,28 @@
         <button type="submit" class="btn btn-primary mb-2" id="add">Add</button>
     </form>
     <button class="btn btn-primary mb-2" id="compute">Compute</button>
+
+
+    <div id="map" class="d-none"></div>
 </section>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
+    var markerArray = [];
+
+    // Instantiate a directions service.
+    var directionsService = null;
+
+    // Create a map and center it on Manhattan.
+    var map = null;
+
+    var colorId = 0;
+
+    // Create a renderer for directions and bind it to the map.
+    //var directionsDisplay = new google.maps.DirectionsRenderer({map: map});
+
+    // Instantiate an info window to hold step text.
+    var stepDisplay = null;
     var url = "http://localhost:3000";
     var users = [
         {
@@ -63,7 +87,124 @@
             "dest": "Genève"
         }
     ];
-    var results = [];
+    var results = {
+        "number_users": 5,
+        "number_stations": 15,
+        "matches": {
+            "0": 11,
+            "1": 9,
+            "2": 6,
+            "3": 5,
+            "4": 5
+        },
+        "stations_capacities": {},
+        "total cost": 115310,
+        "0": {
+            "name": "Cointrin",
+            "n_spots": 0,
+            "lat": 46.2207092326,
+            "lng": 6.09389439216,
+            "nummer": 1007
+        },
+        "1": {
+            "name": "Gen\u00e8ve",
+            "n_spots": 0,
+            "lat": 46.2102022669,
+            "lng": 6.14245302875,
+            "nummer": 1008
+        },
+        "2": {
+            "name": "Creux-de-Genthod",
+            "n_spots": 0,
+            "lat": 46.263759507,
+            "lng": 6.16132058711,
+            "nummer": 1012
+        },
+        "3": {
+            "name": "Pont-C\u00e9ard",
+            "n_spots": 0,
+            "lat": 46.287391434,
+            "lng": 6.16267245042,
+            "nummer": 1013
+        },
+        "4": {
+            "name": "Genthod-Bellevue",
+            "n_spots": 0,
+            "lat": 46.2567305087,
+            "lng": 6.15396312897,
+            "nummer": 1021
+        },
+        "5": {
+            "name": "Versoix",
+            "n_spots": 21.0,
+            "lat": 46.2797158332,
+            "lng": 6.16574632626,
+            "nummer": 1022
+        },
+        "6": {
+            "name": "Gen\u00e8ve-A\u00e9roport",
+            "n_spots": 290.0,
+            "lat": 46.2325293452,
+            "lng": 6.11198571992,
+            "nummer": 1026
+        },
+        "7": {
+            "name": "Gland",
+            "n_spots": 164.0,
+            "lat": 46.419975355,
+            "lng": 6.26913801937,
+            "nummer": 1031
+        },
+        "8": {
+            "name": "Gilly-Bursinel",
+            "n_spots": 0,
+            "lat": 46.4450581908,
+            "lng": 6.30636546465,
+            "nummer": 1032
+        },
+        "9": {
+            "name": "Rolle",
+            "n_spots": 88.0,
+            "lat": 46.4627356609,
+            "lng": 6.3364081818,
+            "nummer": 1033
+        },
+        "10": {
+            "name": "Perroy",
+            "n_spots": 0,
+            "lat": 46.4712228249,
+            "lng": 6.36299352204,
+            "nummer": 1034
+        },
+        "11": {
+            "name": "Allaman",
+            "n_spots": 88.0,
+            "lat": 46.4757395273,
+            "lng": 6.39970400408,
+            "nummer": 1035
+        },
+        "12": {
+            "name": "Prangins",
+            "n_spots": 0,
+            "lat": 46.3959991986,
+            "lng": 6.24498834605,
+            "nummer": 1040
+        },
+        "13": {
+            "name": "Etoy",
+            "n_spots": 13.0,
+            "lat": 46.4751599503,
+            "lng": 6.42713908598,
+            "nummer": 1042
+        },
+        "14": {
+            "name": "Gen\u00e8ve S\u00e9cheron",
+            "n_spots": 0,
+            "lat": 46.222435146,
+            "lng": 6.14455938175,
+            "nummer": 16283
+        }
+    };
     $(document).ready(function(){
 
         loadUsers();
@@ -87,8 +228,10 @@
                     dataType: 'json',
                     async: true,
                     success: function(msg) {
+                        $('#map').toggleClass('d-none');
                         results = msg;
-                        alert(msg.toSource());
+                        calculateAndDisplayRoute(
+                            directionsService, markerArray, stepDisplay, map);
 
                     },
                     failure: function(errMsg) {
@@ -106,9 +249,121 @@
         });
     }
 
-    function buildMap(){
+    function initMap() {
+
+        // Create a map and center it on Manhattan.
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 6,
+            center: {lat: 46.2102022669, lng: 6.14245302875},
+            styles: [{
+                featureType: 'transit',
+                elementType: 'labels.icon',
+                stylers: [{visibility: 'off'}]
+            }]
+        });
+
+        directionsService = new google.maps.DirectionsService;
+
+        stepDisplay = new google.maps.InfoWindow;
+
+
+        // Display the route between the initial start and end selections.
+        //calculateAndDisplayRoute(directionsService, markerArray, stepDisplay, map);
+    }
+
+    function calculateAndDisplayRoute(directionsService,
+                                      markerArray, stepDisplay, map) {
+        // First, remove any existing markers from the map.
+        for (var i = 0; i < markerArray.length; i++) {
+            markerArray[i].setMap(null);
+        }
+
+        // Retrieve the start and end locations and create a DirectionsRequest using
+        // WALKING directions.
+        for (var i = 0; i < users.length; i++) {
+            directionsService.route({
+                origin: {lat: parseFloat(users[i]['lat']), lng: parseFloat(users[i]['long'])},
+                destination: {lat: results[results['matches'][i]]['lat'], lng: results[results['matches'][i]]['lng']},
+                travelMode: 'DRIVING'
+            }, function(response, status) {
+                // Route the directions and pass the response to a function to create
+                // markers for each step.
+
+                if (status === 'OK') {
+                    var directionsDisplay = new google.maps.DirectionsRenderer({map: map,
+                        polylineOptions: {strokeColor: rainbow(users.length, colorId)}});
+                    directionsDisplay.setDirections(response);
+                    //showSteps(response, markerArray, stepDisplay, map);
+                } else {
+                    window.alert('Directions request failed due to ' + status);
+                }
+            });
+            // Retrieve the start and end locations and create a DirectionsRequest using
+            // WALKING directions.
+            directionsService.route({
+                origin: {lat: results[results['matches'][i]]['lat'], lng: results[results['matches'][i]]['lng']},
+                destination: users[i]['dest'],
+                travelMode: 'TRANSIT',
+                transitOptions: {
+                    departureTime: new Date('November 25, 2018 12:00:00'),
+                    modes: ['TRAIN'],
+                    routingPreference: 'FEWER_TRANSFERS'
+                }
+            }, function(response, status) {
+                // Route the directions and pass the response to a function to create
+                // markers for each step.
+                if (status === 'OK') {
+                    var directionsDisplay = new google.maps.DirectionsRenderer({map: map,
+                        polylineOptions: {strokeColor: rainbow(users.length, colorId++), icons:[] }});
+                    directionsDisplay.setDirections(response);
+                    directionsDisplay.setOptions( { suppressMarkers: true, suppressInfoWindows : true } );
+                    //showSteps(response, markerArray, stepDisplay, map);
+                } else {
+                    window.alert('Directions request failed due to ' + status);
+                }
+            });
+        }
 
     }
+
+    function attachInstructionText(stepDisplay, marker, text, map) {
+        google.maps.event.addListener(marker, 'click', function() {
+            // Open an info window when the marker is clicked on, containing the text
+            // of the step.
+            stepDisplay.setContent(text);
+            stepDisplay.open(map, marker);
+        });
+    }
+
+    function rainbow(numOfSteps, step) {
+        // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
+        // Adam Cole, 2011-Sept-14
+        // HSV to RBG adapted from: http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
+        var r, g, b;
+        var h = step / numOfSteps;
+        var i = ~~(h * 6);
+        var f = h * 6 - i;
+        var q = 1 - f;
+        switch(i % 6){
+            case 0: r = 1; g = f; b = 0; break;
+            case 1: r = q; g = 1; b = 0; break;
+            case 2: r = 0; g = 1; b = f; break;
+            case 3: r = 0; g = q; b = 1; break;
+            case 4: r = f; g = 0; b = 1; break;
+            case 5: r = 1; g = 0; b = q; break;
+        }
+        var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
+        return (c);
+    }
+
+
+
 </script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDo9ECba-vKX4CVd3P53HuRgPR-GSC-u5I&callback=initMap">
+</script>
+<script>
+</script>
+
 </body>
 </html>
