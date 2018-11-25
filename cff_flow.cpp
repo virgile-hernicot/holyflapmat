@@ -61,8 +61,8 @@ public:
 #define USER(idx) (idx)
 #define STATION(idx) (idx+N)
 #define IDX_STATION(idx) (idx-N)
-enum COST_HEURISTIC {SIMPLE, RATIO};
-COST_HEURISTIC HEURISTIC = SIMPLE;
+enum COST_HEURISTIC {SIMPLE, RATIO, ADVANCED};
+COST_HEURISTIC HEURISTIC = ADVANCED;
 
 int compute_cost(int time_to_station, int duration_of_travel, int nb_changes, double user_pref, int max_duration){
 	if(time_to_station < 0)
@@ -74,6 +74,10 @@ int compute_cost(int time_to_station, int duration_of_travel, int nb_changes, do
 		const int alpha = 2;
 		double ratio = (double) time_to_station / (time_to_station + duration_of_travel);
 		return ((int) std::ceil(std::pow(ratio, alpha)));
+	}else if(HEURISTIC == ADVANCED){
+		double ratio = (double) time_to_station / (time_to_station + duration_of_travel);
+		double h = std::ceil(ratio * nb_changes * user_pref)
+		return (int)h;
 	}else{
 		throw("COST_HEURISTIC not recognized\n");
 		return -1;
