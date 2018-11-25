@@ -26,6 +26,7 @@ time_to_stations_per_user = {}
 duration_per_user = {}
 changes_per_user = {}
 available_spots = {}
+price_per_station = {}
 names = {}
 # dictionary storing all the possible station information to a file
 station_infos = {}
@@ -40,6 +41,7 @@ for idx, element in enumerate(users_info["users"]):
     time_to_stations = {}
     duration_from_stations = {}
     changes_from_stations = {}
+    price = {}
 
     for element in closest:
         nummer = int(element["n"])
@@ -59,6 +61,7 @@ for idx, element in enumerate(users_info["users"]):
         time_to_stations[nummer] = time
         duration_from_stations[nummer] = travel_time
         changes_from_stations[nummer] = nb_changes
+        price[nummer] = int(element["price"])
 
         if nummer not in station_infos:
             station_infos[nummer] = removekey(element, "n")
@@ -68,6 +71,7 @@ for idx, element in enumerate(users_info["users"]):
     time_to_stations_per_user[idx] = time_to_stations
     duration_per_user[idx] = duration_from_stations
     changes_per_user[idx] = changes_from_stations
+    price_per_station[idx] = price
 
 # remove duplicates and sort
 distinct_stations = sorted(list(set(distinct_stations)))
@@ -96,6 +100,13 @@ for nummers_changes in changes_per_user.values():
     for station_nummer in distinct_stations:
         # if the station is in the prefered stations of the user, store the time, otherwise store -1
         data += str(nummers_changes.get(station_nummer, -1)) + ' '
+    data += '\n'
+
+for nummers_price in price_per_station.values():
+    nummers = nummers_price.keys()
+    for station_nummer in distinct_stations:
+        # if the station is in the prefered stations of the user, store the time, otherwise store -1
+        data += str(nummers_price.get(station_nummer, -1)) + ' '
     data += '\n'
 
 for i in range(N):
