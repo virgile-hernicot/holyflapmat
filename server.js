@@ -46,7 +46,7 @@ app.post('/compute', function(request, response){
             response.send(JSON.parse(data));    // echo the result back
             return response.end();
         });
-    }, 30000);
+    }, 1000);
 
 });
 

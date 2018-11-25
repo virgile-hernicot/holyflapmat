@@ -62,7 +62,7 @@ public:
 #define STATION(idx) (idx+N)
 #define IDX_STATION(idx) (idx-N)
 enum COST_HEURISTIC {SIMPLE, RATIO, ADVANCED};
-COST_HEURISTIC HEURISTIC = ADVANCED;
+COST_HEURISTIC HEURISTIC = SIMPLE;
 
 int compute_cost(int time_to_station, int duration_of_travel, int nb_changes, int price, double user_pref, int max_duration){
 	

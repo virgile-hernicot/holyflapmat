@@ -15,7 +15,7 @@
 </head>
 <body>
 <nav class="navbar navbar-dark" style="background-color: red;">
-    <span class="navbar-brand mb-0 h1">Park + Rail</span>
+    <span class="navbar-brand mb-0 h1">Park + Rail Disbatcher</span>
 </nav>
 <section class="container-fluid">
     <div class="row">
@@ -32,7 +32,7 @@
         <div class="col-4">
             <div class="mx-5 px-5 my-3">
                 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: red;">
-                    <a class="navbar-brand" href="#">Park + Rail</a>
+                    <a class="navbar-brand" href="#">Park + Rail Disbatcher</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -138,11 +138,6 @@
             "dest": "Lausanne",
             "lat": "46.894928",
             "long": "6.719774"
-        },
-        {
-            "dest": "Lausanne",
-            "lat": "46.887693",
-            "long": "6.745242"
         }
     ];
     var results = {
@@ -269,8 +264,8 @@
 
         $("#add").on('click', function (e) {
 
-            var lat = 46.917259;
-            var long = 6.762296;
+            var lat = "46.887693";
+            var long = "6.745242";
 
             var dest = $("#dest").val();
             users.push({"lat": lat, "long": long, "dest": dest});
@@ -353,11 +348,8 @@
         for(var ind = 0; ind < results['number_stations']; ind++){
             var marker = new google.maps.Marker({
                 position: {lat: results[ind]['lat'], lng: results[ind]['lng']},
-                label : results[ind]['n_spots'],
+                title : results[ind]['n_spots'],
                 map : map
-            });
-            marker.addListener('click', function() {
-                displayForStation(directionsService, markerArray, stepDisplay, map, ind);
             });
         }
 
