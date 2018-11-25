@@ -18,7 +18,7 @@ def removekey(d, key):
 gmaps = googlemaps.Client(key='AIzaSyDo9ECba-vKX4CVd3P53HuRgPR-GSC-u5I')
 costs = open('costs_data', 'w')
 
-with open('examples/five_users_input_sample.json') as f:
+with open('examples/boudry.test') as f:
     users_info = json.load(f)
 
 N = len(users_info["users"])  # number of users
@@ -102,7 +102,7 @@ for nummers_times in time_to_stations_per_user.values():
     nummers = nummers_times.keys()
     for station_nummer in distinct_stations:
         # if the station is in the prefered stations of the user, store the time, otherwise store -1
-        data += str(50 * nummers_times.get(station_nummer, -1)) + ' '  # coefficient, because car worse than train
+        data += str(nummers_times.get(station_nummer, -1)) + ' '  # coefficient, because car worse than train
     data += '\n'
 
 for nummers_duration in duration_per_user.values():
