@@ -18,7 +18,7 @@ def removekey(d, key):
 gmaps = googlemaps.Client(key='AIzaSyDo9ECba-vKX4CVd3P53HuRgPR-GSC-u5I')
 costs = open('costs_data', 'w')
 
-with open('examples/boudry.test') as f:
+with open('examples/input.test') as f:
     users_info = json.load(f)
 
 N = len(users_info["users"])  # number of users
