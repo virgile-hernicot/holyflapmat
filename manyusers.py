@@ -18,7 +18,7 @@ def removekey(d, key):
 gmaps = googlemaps.Client(key='AIzaSyDo9ECba-vKX4CVd3P53HuRgPR-GSC-u5I')
 costs = open('costs_data', 'w')
 
-with open('examples/five_users_input_sample.json') as f:
+with open('examples/boudry.test') as f:
     users_info = json.load(f)
 
 N = len(users_info["users"])  # number of users
@@ -37,14 +37,14 @@ ordered_station_infos = collections.OrderedDict()
 distinct_stations = []
 
 my_file = Path("./final_infos.json")
-prev_infos = None
+prev_infos ={}
+spots_persisted = {}
 if my_file.is_file():
     with open(my_file) as f:
         prev_infos = json.load(f)
-# list of tuples (nummer, n_spots)
-spots_persisted = {}
-for i in range(prev_infos['number_stations']):
-    spots_persisted[prev_infos[str(i)]['nummer']] = prev_infos[str(i)]['n_spots']
+    # list of tuples (nummer, n_spots)
+    for i in range(prev_infos['number_stations']):
+        spots_persisted[prev_infos[str(i)]['nummer']] = prev_infos[str(i)]['n_spots']
 
 for idx, element in enumerate(users_info["users"]):
     (user_latitude, user_longitude) = (element["lat"], element["long"])  # 46.456566, 6.209502
@@ -102,7 +102,7 @@ for nummers_times in time_to_stations_per_user.values():
     nummers = nummers_times.keys()
     for station_nummer in distinct_stations:
         # if the station is in the prefered stations of the user, store the time, otherwise store -1
-        data += str(50 * nummers_times.get(station_nummer, -1)) + ' '  # coefficient, because car worse than train
+        data += str(nummers_times.get(station_nummer, -1)) + ' '  # coefficient, because car worse than train
     data += '\n'
 
 for nummers_duration in duration_per_user.values():

@@ -4,3 +4,8 @@ clean:
 	rm cff_flow
 	rm examples/five_users_input_sample.json
 
+reset:
+	rm final_infos.json
+	rm result.txt
+	rm stations_info.json
+

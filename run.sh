@@ -7,5 +7,5 @@ echo "Location script done.\n"
 echo "Flow done.\n"
 python3 send_to_server.py
 echo "Sent results to server."
-python3 persist_available_spots.py
+#python3 persist_available_spots.py
 echo "Available parking spots persisted."
