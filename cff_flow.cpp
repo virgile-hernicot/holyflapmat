@@ -61,19 +61,19 @@ public:
 #define USER(idx) (idx)
 #define STATION(idx) (idx+N)
 #define IDX_STATION(idx) (idx-N)
-enum COST_HEURISTIC {SIMPLE, WEIGHTED};
+enum COST_HEURISTIC {SIMPLE, RATIO};
 COST_HEURISTIC HEURISTIC = SIMPLE;
 
-int compute_cost(int time_to_station, int duration_of_travel, int max_duration){
+int compute_cost(int time_to_station, int duration_of_travel, int nb_changes, double user_pref, int max_duration){
 	if(time_to_station < 0)
 		return -1;
 
 	if(HEURISTIC == SIMPLE){
 		return time_to_station + duration_of_travel;
-	}else if(HEURISTIC == WEIGHTED){
+	}else if(HEURISTIC == RATIO){
 		const int alpha = 2;
-		double ratio = (double) time_to_station / duration_of_travel;
-		return ((int) std::ceil(std::pow(ratio, alpha))) + duration_of_travel;
+		double ratio = (double) time_to_station / (time_to_station + duration_of_travel);
+		return ((int) std::ceil(std::pow(ratio, alpha)));
 	}else{
 		throw("COST_HEURISTIC not recognized\n");
 		return -1;
@@ -107,6 +107,9 @@ void solve_flow(int *station_capacities){
 	// Negative cost = unspecified route -> no edge
 	std::vector<std::vector<int>> time_to_stations(N, std::vector<int>(M, -1));
 	std::vector<std::vector<int>> duration_of_travel(N, std::vector<int>(M, -1));
+	std::vector<std::vector<int>> nb_changes(N, std::vector<int>(M, -1));
+
+	std::vector<double> user_pref(N, -1);
 
 	int max_duration = std::numeric_limits<int>::min();
 
@@ -128,7 +131,17 @@ void solve_flow(int *station_capacities){
 
 	for(int i=0; i<N; i++){
 		for(int j=0; j<M; j++){
-			int cost_i_j = compute_cost(time_to_stations[i][j], duration_of_travel[i][j], max_duration);
+			std::cin >> nb_changes[i][j];
+		}
+	}
+
+	for(int i=0; i<N; i++){
+		std::cin >> user_pref[i];
+	}
+
+	for(int i=0; i<N; i++){
+		for(int j=0; j<M; j++){
+			int cost_i_j = compute_cost(time_to_stations[i][j], duration_of_travel[i][j], nb_changes[i][j], user_pref[i], max_duration);
 			if(cost_i_j >= 0)
 				eaG.addEdge(USER(i), STATION(j), 1, cost_i_j);		
 		}
