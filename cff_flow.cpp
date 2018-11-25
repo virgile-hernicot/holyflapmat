@@ -77,9 +77,7 @@ int compute_cost(int time_to_station, int duration_of_travel, int nb_changes, in
 	}else{
 		throw("COST_HEURISTIC not recognized\n");
 		return -1;
-	}
-
-	
+	}	
 }
 
 void solve_flow(int *station_capacities){
